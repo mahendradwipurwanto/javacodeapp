@@ -21,13 +21,13 @@ if (file_exists('vendor/cahkampung/landa-php/src/LandaPhp.php')) {
 if (file_exists('vendor/cahkampung/landa-acc/functions.php')) {
     require 'vendor/cahkampung/landa-acc/functions.php';
 }
-if(config('TELEGRAM_LOG') == true){
-	set_error_handler("errorHandler");
-	register_shutdown_function("shutdownHandler");
-	ini_set("display_errors", 0);	
+if (config('TELEGRAM_LOG') == true) {
+    set_error_handler("errorHandler");
+    register_shutdown_function("shutdownHandler");
+    ini_set("display_errors", 0);
 }
 $config = [
-    'displayErrorDetails'               => config('DISPLAY_ERROR'),
+    'displayErrorDetails' => config('DISPLAY_ERROR'),
     'determineRouteBeforeAppMiddleware' => true,
 ];
 $app = new \Slim\App(["settings" => $config]);

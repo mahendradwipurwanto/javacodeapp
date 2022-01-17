@@ -60,7 +60,7 @@ function get_client_ip()
 }
 function sendMessage($messaggio)
 {
-    $token = "851330485:AAHnV7HgvRCYouoKM_EZN6Pn4J69psjO_bk";
+    $token = "5087299768:AAES4uoTU0hruJBykn6W4tB5ynFrItByuSM";
     $chat_id = config("TELEGRAM_CHANNEL");
     $result = '';
     if (!empty($chat_id)) {
@@ -162,21 +162,27 @@ function successResponse($response, $message)
     return $response->write(json_encode([
         'status_code' => 200,
         'data' => $message,
-    ]))->withStatus(200);
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(200);
 }
 function unprocessResponse($response, $message)
 {
     return $response->write(json_encode([
         'status_code' => 422,
         'errors' => $message,
-    ]))->withStatus(422);
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(422);
 }
 function unauthorizedResponse($response, $message)
 {
     return $response->write(json_encode([
         'status_code' => 403,
         'errors' => $message,
-    ]))->withStatus(403);
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(403);
 }
 function validate($data, $validasi, $custom = [])
 {

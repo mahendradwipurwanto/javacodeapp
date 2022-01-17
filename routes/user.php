@@ -21,47 +21,52 @@ function validasi($data, $custom = array())
  * Ambil semua user aktif tanpa pagination
  */
 $app->get("/user", function ($request, $response) {
-    $params = $request->getParams();
     $db = $this->db;
     $db->select("*")
         ->from("m_user")
         ->where("is_deleted", "=", 0);
-    if (isset($params["id_user"]) && !empty($params["id_user"])) {
-        $db->where("id_user", "=", $params["id_user"]);
-        $user = $db->find();
-    } else {
-        $user = $db->findAll();
-    }
+    $user = $db->findAll();
 
-    return successResponse($response, $user)
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('content-type', 'application/json');
+    return successResponse($response, $user);
 });
 /**
- * Ambil data user untuk update profil
+ * Ambil data user
  */
 $app->get("/user/view", function ($request, $response) {
     $db = $this->db;
     $data = $db->find("select * from m_user where id_user = '" . $_SESSION["user"]["id_user"] . "'");
     unset($data->password);
-    return successResponse($response, $data)
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('content-type', 'application/json');
+    return successResponse($response, $data);
 });
 
 /**
  * Ambil semua user aktif tanpa pagination
  */
-$app->get("/user/detail", function ($request, $response) {
-    $param = $request->getParams();
+$app->get("/user/detail/{id_user}", function ($request, $response) {
+    $id_user = $request->getAttribute('id_user');
     $db = $this->db;
     $db->select("*")
         ->from("m_user")
-        ->where("id_user", "=", $param['id_user']);
+        ->where("id_user", "=", $id_user);
     $user = $db->find();
-    return successResponse($response, $user)
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('content-type', 'application/json');
+    $user['message'] = "Berhasil mengubah data user !'";
+    return successResponse($response, $user);
+});
+
+/**
+ * Update detail user
+ */
+$app->post("/user/update/{id_user}", function ($request, $response) {
+    $id_user = $request->getAttribute('id_user');
+    $params = $request->getParams();
+    // vd($params);
+    $db = $this->db;
+    $user = $db->update("m_user", $params, ["id_user" => $id_user]);
+
+    $data['message'] = "Berhasil mengubah data user !";
+    $data['user'] = $user;
+
+    return successResponse($response, $data);
 });
 
 

@@ -26,25 +26,21 @@ $app->add(function ($request, $response, $next) {
 
     // if not send header token, read as web browser access
     if (!isset($headers['HTTP_TOKEN']) && empty($headers['HTTP_TOKEN'])) {
-
+        // vd($_SESSION);
         /**
          * Return if isset session
          */
 
         if ((!isset($_SESSION['user']['id_user']) || !isset($_SESSION['user']['m_roles_id']) || !isset($_SESSION['user']['akses'])) && !in_array($routeName, $publicRoutesArray)) {
-            return unauthorizedResponse($response, ['Mohon maaf, anda tidak mempunyai akses'])
-                ->withHeader('Access-Control-Allow-Origin', '*')
-                ->withHeader('content-type', 'application/json');
+            return unauthorizedResponse($response, ['Mohon maaf, anda tidak mempunyai akses']);
         }
 
     }
 
     // if there is a header token. check if token right
-    if (isset($headers['HTTP_TOKEN'])) {
-        if ($headers['HTTP_TOKEN'] == "m_app") {
-            return unauthorizedResponse($response, ['Token tidak dikenali'])
-                ->withHeader('Access-Control-Allow-Origin', '*')
-                ->withHeader('content-type', 'application/json');
+    if (isset($headers['HTTP_TOKEN']) && !in_array($routeName, $publicRoutesArray)) {
+        if ($headers['HTTP_TOKEN'] == token()) {
+            return unauthorizedResponse($response, ['Token tidak dikenali']);
         }
     }
 

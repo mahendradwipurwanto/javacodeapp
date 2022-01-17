@@ -15,38 +15,48 @@ function validasi($data, $custom = [])
 
 // ambil semua menu aktif
 
-$app->get("/menu", function ($request, $response) {
-  $param = $request->getParams();
+$app->get("/menu/all", function ($request, $response) {
   $db = $this->db;
   $db->select("*")
     ->from("m_menu")
     ->where("is_deleted", "=", 0);
-  if (isset($param["kategori"]) && !empty($param["kategori"])) {
-    $db->where("kategori", "=", $param["kategori"]);
+  $menu = $db->findAll();
+
+  return successResponse($response, $menu);
+});
+
+// ambil semua menu aktif
+
+$app->get("/menu/kategori/{kategori}", function ($request, $response) {
+  $kategori = $request->getAttribute('kategori');
+  $db = $this->db;
+  $db->select("*")
+    ->from("m_menu")
+    ->where("is_deleted", "=", 0);
+  if (isset($kategori) && !empty($kategori)) {
+    $db->where("kategori", "=", $kategori);
     $menu = $db->find();
   } else {
     $menu = $db->findAll();
   }
 
-  return successResponse($response, $menu)
-    ->withHeader('Access-Control-Allow-Origin', '*')
-    ->withHeader('content-type', 'application/json');
+  return successResponse($response, $menu);
 });
 
 
 // ambil semua menu aktif
 
-$app->get("/menu/view", function ($request, $response) {
-  $param = $request->getParams();
+$app->get("/menu/detail/{id_menu}", function ($request, $response) {
+  $id_menu = $request->getAttribute('id_menu');
   $db = $this->db;
   $db->select("*")
     ->from("m_menu")
-    ->where("id_menu", "=", $param['id_menu']);
+    ->where("id_menu", "=", $id_menu);
   $menu = $db->find();
 
   $db->select("*")
     ->from("m_menu_detail")
-    ->where("id_menu", "=", $param['id_menu']);
+    ->where("id_menu", "=", $id_menu);
   $detail = $db->findAll();
 
   if (isset($detail)) {
@@ -56,7 +66,26 @@ $app->get("/menu/view", function ($request, $response) {
     $data['menu'] = $menu;
   }
 
-  return successResponse($response, $data)
-    ->withHeader('Access-Control-Allow-Origin', '*')
-    ->withHeader('content-type', 'application/json');
+  return successResponse($response, $data);
+});
+
+/**
+ * Insert new menu
+ */
+$app->post("/menu/add", function ($request, $response) {
+  $params = $request->getParams();
+  $db = $this->db;
+
+  $validasi = validasi($params);
+
+  if ($validasi === true) {
+    try {
+
+      $menu = $db->insert("m_menu", $params);
+      return successResponse($response, $menu);
+    } catch (Exception $e) {
+      return unprocessResponse($response, ["Terjadi masalah pada server"]);
+    }
+  }
+  return unprocessResponse($response, $validasi);
 });
