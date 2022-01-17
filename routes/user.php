@@ -49,7 +49,6 @@ $app->get("/user/detail/{id_user}", function ($request, $response) {
         ->from("m_user")
         ->where("id_user", "=", $id_user);
     $user = $db->find();
-    $user['message'] = "Berhasil mengubah data user !'";
     return successResponse($response, $user);
 });
 

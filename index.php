@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set("Asia/Jakarta");
 # Session lifetime of 20 hours
 ini_set('session.gc_maxlifetime', 20 * 60 * 60);
 ini_set('session.gc_probability', 1);
