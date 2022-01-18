@@ -1,1 +1,0 @@
-user|a:5:{s:7:"id_user";i:1;s:8:"username";s:5:"admin";s:4:"nama";s:11:"Super Admin";s:10:"m_roles_id";i:1;s:5:"akses";O:8:"stdClass":7:{s:12:"master_roles";b:1;s:11:"master_user";b:1;s:12:"master_akses";b:1;s:14:"pengguna_akses";b:1;s:13:"pengguna_user";b:1;s:14:"app_transaksi1";b:1;s:16:"laporan_laporan1";b:1;}}token|s:5:"m_app";

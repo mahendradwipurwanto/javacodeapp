@@ -32,4 +32,14 @@ $app->get("/diskon/user/{id_user}", function ($request, $response) {
   return successResponse($response, $menu);
 });
 
+// ambil semua diskon aktif dari seorang user
+
+$app->get("/diskon/detail/{id_diskon}", function ($request, $response) {
+  $id_diskon = $request->getAttribute('id_diskon');
+  $db = $this->db;
+  $menu = $db->findAll("SELECT a.id_diskon, a.id_user, c.nama as nama_user, b.nama, b.diskon FROM m_diskon a, m_promo b, m_user c WHERE a.id_promo = b.id_promo AND a.id_user = c.id_user AND b.type = 'diskon' AND a.id_diskon = '$id_diskon'");
+
+  return successResponse($response, $menu);
+});
+
 ?>

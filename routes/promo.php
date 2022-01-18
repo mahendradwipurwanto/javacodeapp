@@ -17,9 +17,11 @@
 
 $app->get("/promo/all", function ($request, $response) {
   $db = $this->db;
-  $db->select("*")
-    ->from("m_promo")
-    ->where("is_deleted", "=", 0);
+  $db->select("a.id_promo, a.type, a.nama, a.diskon, a.nominal, a.kadaluarsa, a.syarat_ketentuan, a.foto")
+    ->from("m_promo a")
+    ->where("a.is_deleted", "=", 0)
+    ->limit(4)
+    ->orderBy("type", "asc");
   $menu = $db->findAll();
 
   return successResponse($response, $menu);
@@ -30,9 +32,9 @@ $app->get("/promo/all", function ($request, $response) {
 $app->get("/promo/type/{type}", function ($request, $response) {
   $type = $request->getAttribute('type');
   $db = $this->db;
-  $db->select("*")
-    ->from("m_promo")
-    ->where("is_deleted", "=", 0)
+  $db->select("a.id_promo, a.nama, a.diskon, a.nominal, a.kadaluarsa, a.syarat_ketentuan, a.foto")
+    ->from("m_promo a")
+    ->where("a.is_deleted", "=", 0)
     ->andWhere("type", "=", $type);
   $menu = $db->findAll();
 

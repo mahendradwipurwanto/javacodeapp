@@ -3,8 +3,7 @@
 function validasi($data, $custom = array())
 {
     $validasi = array(
-        "username" => "required",
-        "password" => "required",
+        "email" => "required"
     );
 
     $cek = validate($data, $validasi, $custom);
@@ -32,41 +31,68 @@ $app->post('/auth/login', function ($request, $response) {
     $params = $request->getParams();
     $db = $this->db;
 
-    if (!isset($params['username']) || !isset($params['password'])) {
-        return unprocessResponse($response, $validasi);
-    }
+    $validasi = validasi($params);
 
-    $username = isset($params['username']) ? $params['username'] : '';
-    $password = isset($params['password']) ? $params['password'] : '';
+    if ($validasi === true) {
 
-    /**
-     * Get data
-     */
-    $db->select("m_user.*, m_roles.akses")
-        ->from("m_user")
-        ->leftJoin("m_roles", "m_roles.id = m_user.m_roles_id")
-        ->where("username", "=", $username);
-    $model = $db->find();
+        $user = get_account($db, $params['email']);
 
-    if (!isset($model->id_user)) {
-        return unprocessResponse($response, ['Mohon maaf tidak dapat menemukan data anda !']);
-    }
+        if (isset($params['is_google']) && $params['is_google'] == "is_google") {
 
-    /**
-     * Simpan user ke dalam session
-     */
-    if (sha1($password) == $model->password) {
-        $_SESSION['user']['id_user'] = $model->id_user;
-        $_SESSION['user']['username'] = $model->username;
-        $_SESSION['user']['nama'] = $model->nama;
-        $_SESSION['user']['m_roles_id'] = $model->m_roles_id;
-        $_SESSION['user']['akses'] = json_decode($model->akses);
+            if (!isset($user->id_user)) {
+                $validasi = validasi($params, ["nama" => "required"]);
+
+                if ($validasi !== true) {
+                    return unprocessResponse($response, $validasi);
+                }
+
+                try {
+                    $password = create_password();
+
+                    $input = [
+                        'nama' => $params['nama'],
+                        'email' => $params['email'],
+                        'password' => sha1($password)
+                    ];
+
+                    $db->insert('m_user', $input);
+                } catch (Exception $e) {
+                    return unprocessResponse($response, ["Terjadi masalah pada server"]);
+                }
+
+                $user = get_account($db, $params['email']);
+
+                $_SESSION['user']['is_google'] = true;
+            }
+
+        } else {
+            $validasi = validasi($params, ["password" => "required"]);
+
+            if ($validasi !== true) {
+                return unprocessResponse($response, $validasi);
+            }
+
+            if (!isset($user->id_user)) {
+                return unprocessResponse($response, ['Mohon maaf tidak dapat menemukan data anda !']);
+            }
+
+            if (sha1($params['password']) !== $user->password) {
+                return unprocessResponse($response, ['Password yang anda masukkan salah !']);
+            }
+        }
+
+        $_SESSION['user']['id_user'] = $user->id_user;
+        $_SESSION['user']['email'] = $user->email;
+        $_SESSION['user']['nama'] = $user->nama;
+        $_SESSION['user']['m_roles_id'] = $user->m_roles_id;
+        $_SESSION['user']['akses'] = json_decode($user->akses);
         $_SESSION['token'] = token();
 
         return successResponse($response, $_SESSION);
-    }
 
-    return unprocessResponse($response, ['Password yang anda masukkan salah !']);
+    } else {
+        return unprocessResponse($response, $validasi);
+    }
 
 })->setName('login');
 /**

@@ -43,7 +43,6 @@ $app->get("/menu/kategori/{kategori}", function ($request, $response) {
   return successResponse($response, $menu);
 });
 
-
 // ambil semua menu aktif
 
 $app->get("/menu/detail/{id_menu}", function ($request, $response) {
@@ -54,16 +53,17 @@ $app->get("/menu/detail/{id_menu}", function ($request, $response) {
     ->where("id_menu", "=", $id_menu);
   $menu = $db->find();
 
-  $db->select("*")
-    ->from("m_menu_detail")
-    ->where("id_menu", "=", $id_menu);
-  $detail = $db->findAll();
+  $topping = get_menuDetail($db, $id_menu, "topping");
+  $level = get_menuDetail($db, $id_menu, "level");
 
-  if (isset($detail)) {
-    $data['menu'] = $menu;
-    $data['detail'] = $detail;
-  } else {
-    $data['menu'] = $menu;
+  $data['menu'] = $menu;
+  $data['topping'] = [];
+  $data['level'] = [];
+  if (!empty($topping)) {
+    $data['topping'] = $topping;
+  }
+  if (!empty($level)) {
+    $data['level'] = $level;
   }
 
   return successResponse($response, $data);

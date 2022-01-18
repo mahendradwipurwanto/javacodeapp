@@ -76,7 +76,7 @@ function sendMessage($messaggio)
 
 function errorHandler($error_level, $error_message, $error_file, $error_line, $error_context)
 {
-    $error = "lvl: " . $error_level . " | msg:" . $error_message . " | file:" . $error_file . " | ln:" . $error_line;
+    $error = "[level] " . $error_level . "\n[On file] " . $error_file . "\n[line number] " . $error_line . "\n[Message] " . $error_message;
     switch ($error_level) {
         case E_ERROR:
         case E_CORE_ERROR:
@@ -127,8 +127,8 @@ function mylog($error, $errlvl)
     $link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $text = "<pre>";
     $text .= date("d-m-Y H:i:s") . " \n \n";
-    $text .= "Url : " . $link . "\n \n";
-    $text .= "IP : " . get_client_ip() . " | User : " . $username . " \n \n";
+    $text .= "Trying to access url : " . $link . "\n \n";
+    $text .= "Access IP : " . get_client_ip() . " | Access User : " . $username . " \n \n";
     $text .= $error . " </pre>";
     sendMessage($text);
 }

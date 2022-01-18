@@ -13,7 +13,7 @@ function validasi($data, $custom = array())
         "username" => "required",
         "m_roles_id" => "required",
     );
-    GUMP::set_field_name("m_roles_id", "Hak Akses");
+
     $cek = validate($data, $validasi, $custom);
     return $cek;
 }
@@ -45,11 +45,15 @@ $app->get("/user/view", function ($request, $response) {
 $app->get("/user/detail/{id_user}", function ($request, $response) {
     $id_user = $request->getAttribute('id_user');
     $db = $this->db;
-    $db->select("*")
-        ->from("m_user")
-        ->where("id_user", "=", $id_user);
+    $db->select("a.id_user, a.nama, a.email, a.alamat, a.telepon, a.tgl_lahir, a.foto, a.ktp, a.status, a.m_roles_id")
+        ->from("m_user a")
+        ->where("a.id_user", "=", $id_user);
     $user = $db->find();
-    return successResponse($response, $user);
+    if (isset($user->id_user)) {
+        return successResponse($response, $user);
+    } else {
+        return unprocessResponse($response, ["Tidak dapat menemukan data"]);
+    }
 });
 
 /**
@@ -60,9 +64,11 @@ $app->post("/user/update/{id_user}", function ($request, $response) {
     $params = $request->getParams();
     // vd($params);
     $db = $this->db;
-    $user = $db->update("m_user", $params, ["id_user" => $id_user]);
-
-    $data['message'] = "Berhasil mengubah data user !";
+    try {
+        $user = $db->update("m_user", $params, ["id_user" => $id_user]);
+    } catch (Exception $e) {
+        return unprocessResponse($response, ["Terjadi masalah pada server"]);
+    }
     $data['user'] = $user;
 
     return successResponse($response, $data);

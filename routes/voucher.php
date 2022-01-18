@@ -23,6 +23,17 @@ $app->get("/voucher/all", function ($request, $response) {
   return successResponse($response, $menu);
 });
 
+// ambil list voucher user
+
+$app->get("/voucher/user/{id_user}", function ($request, $response) {
+  $id_user = $request->getAttribute('id_user');
+  $db = $this->db;
+
+  $menu = $db->findAll("SELECT a.*, b.nama FROM m_voucher a, m_promo b WHERE a.id_promo = b.id_promo AND b.type = 'voucher' AND a.id_user = '$id_user'");
+
+  return successResponse($response, $menu);
+});
+
 // ambil detail voucher
 
 $app->get("/voucher/detail/{id_voucher}", function ($request, $response) {
