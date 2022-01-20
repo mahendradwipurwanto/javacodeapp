@@ -22,31 +22,53 @@ none.
     "status_code": 200,
     "data": [
         {
-            "id_user": 26,
-            "nama": "User Testing",
+            "id_user": 1,
+            "nama": "admin",
+            "email": "admin@gmail.com",
             "tgl_lahir": null,
-            "email": "user@gmail.com",
             "alamat": "",
             "telepon": "",
             "foto": null,
-            "password": "d033e22ae348aeb5660fc2140aec35850c4da997",
             "ktp": null,
             "status": 0,
-            "m_roles_id": 2
+            "roles_id": 1,
+            "roles": "Super Admin"
         },
         {
-            "id_user": 30,
-            "nama": "User Testing 2",
+            "id_user": 45,
+            "nama": "test",
+            "email": "test@gmail.com",
             "tgl_lahir": null,
-            "email": "user2@gmail.com",
             "alamat": null,
             "telepon": null,
             "foto": null,
-            "password": "3643e257d63e4066aca072eab8427045d93bb9b2",
             "ktp": null,
             "status": 0,
-            "m_roles_id": 2
-        }
+            "roles_id": 2,
+            "roles": "User"
+        },
+    ]
+}
+```
+
+</p>
+</details>
+<details><summary>204</summary>
+<p>
+
+> This mean that, there is no data can be found on database
+
+</p>
+</details>
+<details><summary>403</summary>
+<p>
+
+```
+{
+    "status_code": 403,
+    "errors": [
+        "Mohon maaf, anda tidak mempunyai akses"
+    ]
 }
 ```
 
@@ -99,14 +121,21 @@ none.
 
 </p>
 </details>
-<details><summary>422</summary>
+<details><summary>204</summary>
+<p>
+
+> This mean that, there is no data can be found on database
+
+</p>
+</details>
+<details><summary>403</summary>
 <p>
 
 ```
 {
-    "status_code": 422,
+    "status_code": 403,
     "errors": [
-        "Tidak dapat menemukan data"
+        "Mohon maaf, anda tidak mempunyai akses"
     ]
 }
 ```
@@ -157,29 +186,39 @@ https://javacode.ngodingin.com/api/user/update/{id_user}
     "status_code": 200,
     "data": {
         "id_user": 26,
-        "nama": "User Testing",
+        "nama": "testing",
+        "tgl_lahir": null,
         "email": "user@gmail.com",
         "alamat": "",
         "telepon": "",
-        "tgl_lahir": null,
         "foto": null,
+        "password": "d033e22ae348aeb5660fc2140aec35850c4da997",
         "ktp": null,
         "status": 0,
-        "m_roles_id": 2
+        "is_google": 0,
+        "m_roles_id": 2,
+        "is_deleted": 0
     }
 }
 ```
 
 </p>
 </details>
-<details><summary>422</summary>
+<details><summary>204</summary>
+<p>
+
+> This mean that, there is no data can be found on database
+
+</p>
+</details>
+<details><summary>403</summary>
 <p>
 
 ```
 {
-    "status_code": 422,
+    "status_code": 403,
     "errors": [
-        "Tidak dapat menemukan data"
+        "Mohon maaf, anda tidak mempunyai akses"
     ]
 }
 ```

@@ -18,14 +18,19 @@ function validasi($data, $custom = array())
     return $cek;
 }
 /**
- * Ambil semua user aktif tanpa pagination
+ * Ambil semua user aktif
  */
 $app->get("/user", function ($request, $response) {
     $db = $this->db;
-    $db->select("*")
-        ->from("m_user")
-        ->where("is_deleted", "=", 0);
+    $db->select("a.id_user, a.nama, a.email, a.tgl_lahir, a.alamat, a.telepon, a.foto, a.ktp, a.status, a.m_roles_id as roles_id, b.nama as roles")
+        ->from('m_user a')
+        ->leftJoin('m_roles b', 'a.m_roles_id = b.id')
+        ->where("a.is_deleted", "=", 0);
     $user = $db->findAll();
+
+    if (empty($user)) {
+        return nocontentResponse($response);
+    }
 
     return successResponse($response, $user);
 });
@@ -34,9 +39,14 @@ $app->get("/user", function ($request, $response) {
  */
 $app->get("/user/view", function ($request, $response) {
     $db = $this->db;
-    $data = $db->find("select * from m_user where id_user = '" . $_SESSION["user"]["id_user"] . "'");
-    unset($data->password);
-    return successResponse($response, $data);
+    $user = $db->find("select * from m_user where id_user = '" . $_SESSION["user"]["id_user"] . "'");
+    unset($user->password);
+
+    if (empty($user)) {
+        return nocontentResponse($response);
+    }
+
+    return successResponse($response, $user);
 });
 
 /**
@@ -45,10 +55,16 @@ $app->get("/user/view", function ($request, $response) {
 $app->get("/user/detail/{id_user}", function ($request, $response) {
     $id_user = $request->getAttribute('id_user');
     $db = $this->db;
-    $db->select("a.id_user, a.nama, a.email, a.alamat, a.telepon, a.tgl_lahir, a.foto, a.ktp, a.status, a.m_roles_id")
+    $db->select("a.id_user, a.nama, a.email, a.tgl_lahir, a.alamat, a.telepon, a.foto, a.ktp, a.status, a.m_roles_id as roles_id, b.nama as roles")
         ->from("m_user a")
+        ->leftJoin('m_roles b', 'a.m_roles_id = b.id')
         ->where("a.id_user", "=", $id_user);
     $user = $db->find();
+
+    if (empty($user)) {
+        return nocontentResponse($response);
+    }
+
     if (isset($user->id_user)) {
         return successResponse($response, $user);
     } else {
@@ -62,16 +78,15 @@ $app->get("/user/detail/{id_user}", function ($request, $response) {
 $app->post("/user/update/{id_user}", function ($request, $response) {
     $id_user = $request->getAttribute('id_user');
     $params = $request->getParams();
-    // vd($params);
     $db = $this->db;
+
     try {
         $user = $db->update("m_user", $params, ["id_user" => $id_user]);
     } catch (Exception $e) {
         return unprocessResponse($response, ["Terjadi masalah pada server"]);
     }
-    $data['user'] = $user;
 
-    return successResponse($response, $data);
+    return successResponse($response, $user);
 });
 
 

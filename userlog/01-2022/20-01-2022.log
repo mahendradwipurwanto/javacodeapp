@@ -1,0 +1,38 @@
+20-01-2022 08:37:36 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"41"}
+20-01-2022 08:37:37 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"88"}
+20-01-2022 08:37:37 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"89"}
+20-01-2022 08:43:41 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"42"}
+20-01-2022 08:43:41 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"90"}
+20-01-2022 08:43:42 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"91"}
+20-01-2022 08:48:02 (192.168.1.43) : User belum disetting (id : 0) menginput tabel m_order {"id":"43"}
+20-01-2022 08:48:02 (192.168.1.43) : User belum disetting (id : 0) menginput tabel m_detail_order {"id":"92"}
+20-01-2022 08:48:03 (192.168.1.43) : User belum disetting (id : 0) menginput tabel m_detail_order {"id":"93"}
+20-01-2022 09:00:39 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"44"}
+20-01-2022 09:00:39 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"94"}
+20-01-2022 09:00:39 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"95"}
+20-01-2022 09:01:13 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"45"}
+20-01-2022 09:01:13 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"96"}
+20-01-2022 09:01:13 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"97"}
+20-01-2022 09:01:13 (::1) : Super Admin (id : 1) mengupdate tabel m_diskon {"id_diskon":1}
+20-01-2022 09:01:13 (::1) : Super Admin (id : 1) mengupdate tabel m_diskon {"id_diskon":3}
+20-01-2022 09:01:51 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"46"}
+20-01-2022 09:01:52 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"98"}
+20-01-2022 09:01:52 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"99"}
+20-01-2022 09:01:52 (::1) : Super Admin (id : 1) mengupdate tabel m_diskon {"id_diskon":1}
+20-01-2022 09:02:58 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"47"}
+20-01-2022 09:02:58 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"100"}
+20-01-2022 09:02:58 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"101"}
+20-01-2022 09:02:59 (::1) : Super Admin (id : 1) mengupdate tabel m_voucher {"id_voucher":1}
+20-01-2022 09:03:20 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"48"}
+20-01-2022 09:03:20 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"102"}
+20-01-2022 09:03:20 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"103"}
+20-01-2022 09:03:20 (::1) : Super Admin (id : 1) mengupdate tabel m_voucher {"id_voucher":1}
+20-01-2022 09:06:02 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"49"}
+20-01-2022 09:06:02 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"104"}
+20-01-2022 09:06:02 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"105"}
+20-01-2022 09:06:02 (::1) : Super Admin (id : 1) mengupdate tabel m_voucher {"id_voucher":1}
+20-01-2022 09:08:13 (::1) : Super Admin (id : 1) menginput tabel m_order {"id":"50"}
+20-01-2022 09:08:14 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"106"}
+20-01-2022 09:08:14 (::1) : Super Admin (id : 1) menginput tabel m_detail_order {"id":"107"}
+20-01-2022 09:08:14 (::1) : Super Admin (id : 1) mengupdate tabel m_voucher {"id_voucher":1}
+20-01-2022 11:11:50 (::1) : test (id : 45) mengupdate tabel m_user {"id_user":"26"}

@@ -31,8 +31,8 @@ user auth data.
 
 ```
 {
-    _email_ : type string,
-    _password_: type string
+    email : type string #required,
+    password : type string #required
 }
 ```
 
@@ -49,11 +49,11 @@ user auth data.
     "status_code": 200,
     "data": {
         "user": {
-            "is_google": true,
             "id_user": 1,
             "email": "admin@gmail.com",
             "nama": "Super Admin",
             "m_roles_id": 1,
+            "is_google": 0,
             "akses": {
                 "master_roles": true,
                 "master_user": true,
@@ -64,7 +64,7 @@ user auth data.
                 "laporan_laporan1": true
             }
         },
-        "token": "m_app"
+        "token": token()
     }
 }
 ```
@@ -72,17 +72,15 @@ user auth data.
 </p>
 </details>
 
-<details><summary>422</summary>
+<details><summary>204</summary>
 <p>
 
-```
-{
-    "status_code": 422,
-    "errors": [
-        "Mohon maaf tidak dapat menemukan data anda !"
-    ]
-}
-```
+> This mean that, there is no data can be found on database
+
+</p>
+</details>
+<details><summary>422</summary>
+<p>
 
 ```
 {
@@ -128,9 +126,9 @@ user google data.
 
 ```
 {
-    *is_google* : type string
-    _nama_ : type string,
-    _email_ : type string,
+    is_google : type string
+    nama : type string,
+    email : type string,
 }
 ```
 
@@ -147,11 +145,76 @@ user google data.
     "status_code": 200,
     "data": {
         "user": {
-            "is_google": true,
-            "id_user": 31,
+            "id_user": 45,
             "email": "test@gmail.com",
             "nama": "test",
             "m_roles_id": 2,
+            "is_google": 0,
+            "akses": {
+                "master_roles": true,
+                "master_user": true,
+                "master_akses": true,
+                "pengguna_akses": true,
+                "pengguna_user": true,
+                "app_transaksi1": true,
+                "laporan_laporan1": true
+            }
+        },
+        "token": token()
+    }
+}
+```
+
+</p>
+</details>
+<details><summary>204</summary>
+<p>
+
+> This mean that, there is no data can be found on database
+
+</p>
+</details>
+<details><summary>422</summary>
+<p>
+
+```
+{
+    "status_code": 422,
+    "errors": [
+        "<span class=\"gump-field\">Nama</span> harus diisi"
+    ]
+}
+```
+
+</p>
+</details>
+
+
+## #GET / sessions
+
+**endpoint**
+```
+https://javacode.ngodingin.com/api/auth/session
+
+```
+#Request body
+none.
+
+#Responses
+
+<details><summary>200</summary>
+<p>
+
+```
+{
+    "status_code": 200,
+    "data": {
+        "user": {
+            "id_user": 45,
+            "email": "test@gmail.com",
+            "nama": "test",
+            "m_roles_id": 2,
+            "is_google": 0,
             "akses": {
                 "master_roles": true,
                 "master_user": true,
@@ -176,96 +239,8 @@ user google data.
 {
     "status_code": 422,
     "errors": [
-        "<span class=\"gump-field\">Nama</span> harus diisi"
+        "can`t find session"
     ]
-}
-```
-
-</p>
-</details>
-
-
-## #GET / sessions
-
-**endpoint**
-```
-https://javacode.ngodingin.com/api/auth/login
-
-```
-#Request body
-none.
-
-#Responses
-
-<details><summary>200</summary>
-<p>
-
-```
-{
-    "status_code": 200,
-    "data": {
-        "user": {
-            "is_google": true,
-            "id_user": 45,
-            "email": "test@gmail.com",
-            "nama": "test",
-            "m_roles_id": 2,
-            "akses": {
-                "master_roles": true,
-                "master_user": true,
-                "master_akses": true,
-                "pengguna_akses": true,
-                "pengguna_user": true,
-                "app_transaksi1": true,
-                "laporan_laporan1": true
-            }
-        },
-        "token": "m_app"
-    }
-}
-```
-
-</p>
-</details>
-
-
-## #GET / logout
-
-**endpoint**
-```
-https://javacode.ngodingin.com/api/auth/logout
-
-```
-#Request body
-none.
-
-#Responses
-
-<details><summary>200</summary>
-<p>
-
-```
-{
-    "status_code": 200,
-    "data": {
-        "user": {
-            "is_google": true,
-            "id_user": 45,
-            "email": "test@gmail.com",
-            "nama": "test",
-            "m_roles_id": 2,
-            "akses": {
-                "master_roles": true,
-                "master_user": true,
-                "master_akses": true,
-                "pengguna_akses": true,
-                "pengguna_user": true,
-                "app_transaksi1": true,
-                "laporan_laporan1": true
-            }
-        },
-        "token": "m_app"
-    }
 }
 ```
 
@@ -294,6 +269,20 @@ none.
     "status_code": 200,
     "data": [
         "Berhasil logout"
+    ]
+}
+```
+
+</p>
+</details>
+<details><summary>200</summary>
+<p>
+
+```
+{
+    "status_code": 200,
+    "data": [
+        "Anda telah logout"
     ]
 }
 ```

@@ -166,6 +166,14 @@ function successResponse($response, $message)
         ->withHeader('content-type', 'application/json')
         ->withStatus(200);
 }
+function nocontentResponse($response)
+{
+    return $response->write(json_encode([
+        'status_code' => 204,
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(204);
+}
 function unprocessResponse($response, $message)
 {
     return $response->write(json_encode([

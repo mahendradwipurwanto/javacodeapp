@@ -3,17 +3,23 @@
 
 *JavaCodeApp API*
 - **Version**: 1.0
-- **Host**: https://javacode.ngodingin.com/api/
-- **Protocols**: https
 - **Accepts**: application/json, multipart/form-data
 - **Responds With**: application/json
+
+- **Host**: https://javacode.ngodingin.com/api/
+- **Protocols**: https
+
+*if host down, please use host down below*
+
+- **Host**: http://192.168. {ask owner}:8080/landa_db/api/
+- **Protocols**: http
 
 <details><summary>More Info</summary>
 <p>
 
-- Database Structure: [see database structure](https://drive.google.com/file/d/1bqHTalvlo1LK_uZAnFRb_A2lbKJTBfmG/view?usp=sharing)
+- Database Structure: [see database structure](https://drive.google.com/file/d/1O9_nBYOvMWNJy-YGkYmA9iGby_RypAaQ/view?usp=sharing)
 - Contact Email: mahendradwipurwanto@gmail.com
-- Telegram Channel: [join now](https://t.me/+fmatnn17a1UyZTQ1)
+- Telegram Log Channel: [join now](https://t.me/+fmatnn17a1UyZTQ1)
 
 </p>
 </details>
@@ -29,6 +35,7 @@ When you first login, you will get param token with a key, use this token key on
 - [Promo](https://github.com/mahendradwipurwanto/javacodeapp_docs/blob/main/PROMO.md)
 - [Voucher](https://github.com/mahendradwipurwanto/javacodeapp_docs/blob/main/VOUCHER.md)
 - [Diskon](https://github.com/mahendradwipurwanto/javacodeapp_docs/blob/main/DISKON.md)
+- [Order](https://github.com/mahendradwipurwanto/javacodeapp_docs/blob/main/ORDER.md)
 
 
 > NB: This APi References Docs, will be updated when there are new endpoint.

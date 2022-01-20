@@ -18,9 +18,18 @@
 $app->get("/voucher/all", function ($request, $response) {
   $db = $this->db;
 
-  $menu = $db->findAll('SELECT a.*, b.nama FROM m_voucher a, m_promo b WHERE a.id_promo = b.id_promo AND b.type = "voucher"');
+  $db->select('a.id_voucher, b.nama, a.id_user, a.nominal, a.info_voucher, a.periode_mulai, a.periode_selesai, a.type, a.status, a.catatan')
+    ->from('m_voucher a')
+    ->innerJoin('m_promo b', 'a.id_promo = b.id_promo')
+    ->where('b.type', '=', 'voucher');
 
-  return successResponse($response, $menu);
+  $voucher = $db->findAll();
+
+  if (empty($voucher)) {
+    return nocontentResponse($response);
+  }
+
+  return successResponse($response, $voucher);
 });
 
 // ambil list voucher user
@@ -29,9 +38,19 @@ $app->get("/voucher/user/{id_user}", function ($request, $response) {
   $id_user = $request->getAttribute('id_user');
   $db = $this->db;
 
-  $menu = $db->findAll("SELECT a.*, b.nama FROM m_voucher a, m_promo b WHERE a.id_promo = b.id_promo AND b.type = 'voucher' AND a.id_user = '$id_user'");
+  $db->select('a.id_voucher, b.nama, a.id_user, a.nominal, a.info_voucher, a.periode_mulai, a.periode_selesai, a.type, a.status, a.catatan')
+    ->from('m_voucher a')
+    ->innerJoin('m_promo b', 'a.id_promo = b.id_promo')
+    ->where('b.type', '=', 'voucher')
+    ->customWhere("a.id_user = {$id_user} AND a.status = 1", 'AND');
 
-  return successResponse($response, $menu);
+  $voucher = $db->findAll();
+
+  if (empty($voucher)) {
+    return nocontentResponse($response);
+  }
+
+  return successResponse($response, $voucher);
 });
 
 // ambil detail voucher
@@ -40,21 +59,16 @@ $app->get("/voucher/detail/{id_voucher}", function ($request, $response) {
   $id_voucher = $request->getAttribute('id_voucher');
   $db = $this->db;
 
-  $menu = $db->findAll("SELECT a.*, b.nama FROM m_voucher a, m_promo b WHERE a.id_promo = b.id_promo AND b.type = 'voucher' AND a.id_voucher = '$id_voucher'");
+  $db->select('a.id_voucher, b.nama, a.id_user, a.nominal, a.info_voucher, a.periode_mulai, a.periode_selesai, a.type, a.status, a.catatan')
+    ->from('m_voucher a')
+    ->innerJoin('m_promo b', 'a.id_promo = b.id_promo')
+    ->where('a.id_voucher', '=', $id_voucher);
 
-  return successResponse($response, $menu);
-});
+  $voucher = $db->findAll();
 
-$app->get('/images/vouvher/{id_voucher}', function ($request, $response, $args) {
-  $id_voucher = $args['id_voucher'];
-  $image = @file_get_contents("../img/" . $data);
-  if ($image === false) {
-    $handler = $this->notFoundHandler;
-    return $handler($request, $response);
+  if (empty($voucher)) {
+    return nocontentResponse($response);
   }
 
-  $response->write($image);
-  return $response->withHeader('Content-Type', FILEINFO_MIME_TYPE);
+  return successResponse($response, $voucher);
 });
-
-?>

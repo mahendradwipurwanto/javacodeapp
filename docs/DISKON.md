@@ -24,10 +24,45 @@ none.
         {
             "id_diskon": 1,
             "id_user": 1,
-            "nama_user": "Super Admin",
+            "nama_user": "admin",
+            "nama": "Mengisi survey",
+            "diskon": 10
+        },
+        {
+            "id_diskon": 2,
+            "id_user": 47,
+            "nama_user": "dev noersy",
+            "nama": "Mengisi survey",
+            "diskon": 10
+        },
+        {
+            "id_diskon": 3,
+            "id_user": 1,
+            "nama_user": "admin",
             "nama": "Mengisi survey",
             "diskon": 10
         }
+    ]
+}
+```
+
+</p>
+</details>
+<details><summary>204</summary>
+<p>
+
+> This mean that, there is no data can be found on database
+
+</p>
+</details>
+<details><summary>403</summary>
+<p>
+
+```
+{
+    "status_code": 403,
+    "errors": [
+        "Mohon maaf, anda tidak mempunyai akses"
     ]
 }
 ```
@@ -51,7 +86,7 @@ none.
 <details><summary>1 Path Parameter</summary>
 <p>
 
-> id_user: integer
+> id_user: integer #required
 
 </p>
 </details>
@@ -68,10 +103,38 @@ none.
         {
             "id_diskon": 1,
             "id_user": 1,
-            "nama_user": "Super Admin",
+            "nama_user": "admin",
+            "nama": "Mengisi survey",
+            "diskon": 10
+        },
+        {
+            "id_diskon": 3,
+            "id_user": 1,
+            "nama_user": "admin",
             "nama": "Mengisi survey",
             "diskon": 10
         }
+    ]
+}
+```
+
+</p>
+</details>
+<details><summary>204</summary>
+<p>
+
+> This mean that, there is no data can be found on database
+
+</p>
+</details>
+<details><summary>403</summary>
+<p>
+
+```
+{
+    "status_code": 403,
+    "errors": [
+        "Mohon maaf, anda tidak mempunyai akses"
     ]
 }
 ```
@@ -95,7 +158,7 @@ none.
 <details><summary>1 Path Parameter</summary>
 <p>
 
-> id_diskon: integer
+> id_diskon: integer #required
 
 </p>
 </details>
@@ -108,14 +171,34 @@ none.
 ```
 {
     "status_code": 200,
-    "data": [
-        {
-            "id_diskon": 1,
-            "id_user": 1,
-            "nama_user": "Super Admin",
-            "nama": "Mengisi survey",
-            "diskon": 10
-        }
+    "data": {
+        "id_diskon": 1,
+        "id_user": 1,
+        "nama_user": "Super Admin",
+        "nama": "Mengisi survey",
+        "diskon": 10,
+        "status": 1
+    }
+}
+```
+
+</p>
+</details>
+<details><summary>204</summary>
+<p>
+
+> This mean that, there is no data can be found on database
+
+</p>
+</details>
+<details><summary>403</summary>
+<p>
+
+```
+{
+    "status_code": 403,
+    "errors": [
+        "Mohon maaf, anda tidak mempunyai akses"
     ]
 }
 ```

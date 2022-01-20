@@ -61,8 +61,6 @@ $app->post('/auth/login', function ($request, $response) {
                 }
 
                 $user = get_account($db, $params['email']);
-
-                $_SESSION['user']['is_google'] = true;
             }
 
         } else {
@@ -73,7 +71,7 @@ $app->post('/auth/login', function ($request, $response) {
             }
 
             if (!isset($user->id_user)) {
-                return unprocessResponse($response, ['Mohon maaf tidak dapat menemukan data anda !']);
+                return nocontentResponse($response);
             }
 
             if (sha1($params['password']) !== $user->password) {
@@ -81,10 +79,12 @@ $app->post('/auth/login', function ($request, $response) {
             }
         }
 
+
         $_SESSION['user']['id_user'] = $user->id_user;
         $_SESSION['user']['email'] = $user->email;
         $_SESSION['user']['nama'] = $user->nama;
         $_SESSION['user']['m_roles_id'] = $user->m_roles_id;
+        $_SESSION['user']['is_google'] = $user->is_google;
         $_SESSION['user']['akses'] = json_decode($user->akses);
         $_SESSION['token'] = token();
 
@@ -99,6 +99,9 @@ $app->post('/auth/login', function ($request, $response) {
  * Hapus semua session
  */
 $app->get('/auth/logout', function ($request, $response) {
+    if (!isset($_SESSION['user']['m_roles_id'])) {
+        return successResponse($response, ['Anda telah logout']);
+    }
     session_destroy();
     return successResponse($response, ['Berhasil logout']);
 })->setName('logout');

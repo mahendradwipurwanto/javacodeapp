@@ -1,18 +1,5 @@
 <?php
 
-// function validasi($data, $custom = [])
-// {
-//   $validasi = [
-//     "nama" => "required",
-//     "kategori" => "required",
-//     "harga" => "required",
-//     "status" => "required"
-//   ];
-
-//   $cek = validate($data, $validasi, $custom);
-//   return $cek;
-// }
-
 // ambil semua promo aktif
 
 $app->get("/promo/all", function ($request, $response) {
@@ -22,9 +9,13 @@ $app->get("/promo/all", function ($request, $response) {
     ->where("a.is_deleted", "=", 0)
     ->limit(4)
     ->orderBy("type", "asc");
-  $menu = $db->findAll();
+  $promo = $db->findAll();
 
-  return successResponse($response, $menu);
+  if (empty($promo)) {
+    return nocontentResponse($response);
+  }
+
+  return successResponse($response, $promo);
 });
 
 // ambil semua promo aktif
@@ -35,10 +26,32 @@ $app->get("/promo/type/{type}", function ($request, $response) {
   $db->select("a.id_promo, a.nama, a.diskon, a.nominal, a.kadaluarsa, a.syarat_ketentuan, a.foto")
     ->from("m_promo a")
     ->where("a.is_deleted", "=", 0)
-    ->andWhere("type", "=", $type);
-  $menu = $db->findAll();
+    ->andWhere("a.type", "=", $type);
+  $promo = $db->findAll();
 
-  return successResponse($response, $menu);
+  if (empty($promo)) {
+    return nocontentResponse($response);
+  }
+
+  return successResponse($response, $promo);
+});
+
+// ambil detail promo
+
+$app->get("/promo/detail/{id_promo}", function ($request, $response) {
+  $id_promo = $request->getAttribute('id_promo');
+  $db = $this->db;
+  $db->select("a.id_promo, a.nama, a.diskon, a.nominal, a.kadaluarsa, a.syarat_ketentuan, a.foto")
+    ->from("m_promo a")
+    ->where("a.is_deleted", "=", 0)
+    ->andWhere("a.id_promo", "=", $id_promo);
+  $promo = $db->find();
+
+  if (empty($promo)) {
+    return nocontentResponse($response);
+  }
+
+  return successResponse($response, $promo);
 });
 
 ?>
