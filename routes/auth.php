@@ -52,10 +52,20 @@ $app->post('/auth/login', function ($request, $response) {
                     $input = [
                         'nama' => $params['nama'],
                         'email' => $params['email'],
-                        'password' => sha1($password)
+                        'password' => sha1($password),
+                        'is_google' => true
                     ];
 
-                    $db->insert('m_user', $input);
+                    $user = $db->insert('m_user', $input);
+
+                    $mail = [
+                        'id_user' => $user->id_user,
+                        'subject' => "Selamat bergabung di JavaCodeAPP Cafe",
+                        'message' => "Hai {$user->nama}, selamat bergabung di javacodeapp cafe, berikut password untuk akun anda {$password}",
+                    ];
+
+                    send_mail($db, $mail);
+
                 } catch (Exception $e) {
                     return unprocessResponse($response, ["Terjadi masalah pada server"]);
                 }
@@ -79,10 +89,22 @@ $app->post('/auth/login', function ($request, $response) {
             }
         }
 
+        if ($user->pin == 111111) {
+
+            $mail = [
+                'id_user' => $user->id_user,
+                'subject' => "PIN JavaCodeAPP Cafe",
+                'message' => "Hai {$user->nama}, akunmu masih menggunakan PIN default. Harap segera ubah pin.",
+            ];
+
+            send_mail($db, $mail);
+        }
+
 
         $_SESSION['user']['id_user'] = $user->id_user;
         $_SESSION['user']['email'] = $user->email;
         $_SESSION['user']['nama'] = $user->nama;
+        $_SESSION['user']['pin'] = $user->pin;
         $_SESSION['user']['m_roles_id'] = $user->m_roles_id;
         $_SESSION['user']['is_google'] = $user->is_google;
         $_SESSION['user']['akses'] = json_decode($user->akses);

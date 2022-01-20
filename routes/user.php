@@ -55,7 +55,7 @@ $app->get("/user/view", function ($request, $response) {
 $app->get("/user/detail/{id_user}", function ($request, $response) {
     $id_user = $request->getAttribute('id_user');
     $db = $this->db;
-    $db->select("a.id_user, a.nama, a.email, a.tgl_lahir, a.alamat, a.telepon, a.foto, a.ktp, a.status, a.m_roles_id as roles_id, b.nama as roles")
+    $db->select("a.id_user, a.nama, a.email, a.tgl_lahir, a.alamat, a.telepon, a.foto, a.ktp, a.pin, a.status, a.m_roles_id as roles_id, b.nama as roles")
         ->from("m_user a")
         ->leftJoin('m_roles b', 'a.m_roles_id = b.id')
         ->where("a.id_user", "=", $id_user);
@@ -82,12 +82,65 @@ $app->post("/user/update/{id_user}", function ($request, $response) {
 
     try {
         $user = $db->update("m_user", $params, ["id_user" => $id_user]);
+        return successResponse($response, $user);
     } catch (Exception $e) {
         return unprocessResponse($response, ["Terjadi masalah pada server"]);
     }
-
-    return successResponse($response, $user);
 });
+
+/**
+ * Send image
+ */
+$app->post("/user/profil/{id_user}", function ($request, $response) {
+    $id_user = $request->getAttribute('id_user');
+    $params = $request->getParams();
+    $db = $this->db;
+
+    $folder = config('PATH_IMG');
+
+    if (!is_dir($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
+    $name = uniqid() . '.jpeg';
+
+    $simpan_foto = base64ToFile(['base64' => $params['image']], $folder, $name);
+
+    $foto = config('SITE_IMG') . $simpan_foto['fileName'];
+
+    try {
+        $user = $db->update("m_user", ['foto' => $foto], ["id_user" => $id_user]);
+        return successResponse($response, $user);
+    } catch (Exception $e) {
+        return unprocessResponse($response, ["Terjadi masalah pada server"]);
+    }
+});
+
+$app->post("/user/ktp/{id_user}", function ($request, $response) {
+    $id_user = $request->getAttribute('id_user');
+    $params = $request->getParams();
+    $db = $this->db;
+
+    $folder = config('PATH_IMG');
+
+    if (!is_dir($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
+    $name = uniqid() . '.jpeg';
+
+    $simpan_foto = base64ToFile(['base64' => $params['image']], $folder, $name);
+
+    $foto = config('SITE_IMG') . $simpan_foto['fileName'];
+
+    try {
+        $user = $db->update("m_user", ['ktp' => $foto], ["id_user" => $id_user]);
+        return successResponse($response, $user);
+    } catch (Exception $e) {
+        return unprocessResponse($response, ["Terjadi masalah pada server"]);
+    }
+});
+
 
 
 # ========= THIS IS NOT ME ========== #

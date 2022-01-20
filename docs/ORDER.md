@@ -2,7 +2,7 @@
 
 - [Home Page](https://github.com/mahendradwipurwanto/javacodeapp_docs/blob/main/README.md)
 
-**Status Order:**
+### Status Order:
 0. dalam antrian
 1. sedang siapkan
 2. bisa diambil

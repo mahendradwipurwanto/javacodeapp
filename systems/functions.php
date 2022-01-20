@@ -13,11 +13,44 @@ function token()
 
 function create_password()
 {
-  $password = random_int(1000, 9999);
+  $password = random_int(100000, 999999);
 
   // insert checking process here
 
   return $password;
+}
+
+function base64ToFile2($base64, $path, $custom_name = null)
+{
+
+  $img = str_replace(' ', '+', $base64);
+  $data = base64_decode($img);
+  $file = $path . uniqid() . '.jpeg';
+  $success = file_put_contents($file, $data);
+  print $success ? $file : 'Unable to save the file.';
+  die;
+  if (isset($base64['base64'])) {
+    $extension = substr($base64['filename'], strrpos($base64['filename'], ",") + 1);
+
+    if (!empty($custom_name)) {
+      $nama = $custom_name;
+    } else {
+      $nama = $base64['filename'];
+    }
+
+    $file = base64_decode($base64['base64']);
+    file_put_contents($path . '/' . $nama, $file);
+
+    return [
+      'fileName' => $nama,
+      'filePath' => $path . '/' . $nama,
+    ];
+  } else {
+    return [
+      'fileName' => '',
+      'filePath' => '',
+    ];
+  }
 }
 
 function create_struk($db)
@@ -31,6 +64,24 @@ function create_struk($db)
   return $no_struk;
 }
 
+function send_mail($db, $params)
+{
+
+  $user = get_user($db, $params['id_user']);
+
+  if (empty($user)) {
+    nocontentResponse($response);
+  }
+
+  $data = [
+    'name' => $user->nama,
+    'to' => $user->email,
+    'subject' => $params['subject'],
+    'message' => $params['message']
+  ];
+  return mailer($data);
+}
+
 // Database function
 function get_account($db, $email)
 {
@@ -38,6 +89,14 @@ function get_account($db, $email)
     ->from("m_user")
     ->leftJoin("m_roles", "m_roles.id = m_user.m_roles_id")
     ->where("email", "=", $email);
+  $user = $db->find();
+  return $user;
+}
+function get_user($db, $id_user)
+{
+  $db->select("*")
+    ->from("m_user")
+    ->where("id_user", "=", $id_user);
   $user = $db->find();
   return $user;
 }

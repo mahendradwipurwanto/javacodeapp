@@ -251,24 +251,28 @@ https://javacode.ngodingin.com/api/menu/add
 <details><summary>Example Request</summary>
 <p>
 
+```
 {
     "nama": "bakso beranak",
     "kategori": "makanan",
     "harga": 10000,
     "status": 1
 }
+```
 
 </p>
 </details>
 <details><summary>Schema</summary>
 <p>
 
+```
 {
     "nama": string,
     "kategori": string,
     "harga": integer,
     "status": integer
 }
+```
 
 </p>
 </details>
