@@ -20,6 +20,40 @@ $app->get("/promo/all", function ($request, $response) {
 
 // ambil semua promo aktif
 
+$app->get("/promo/user/{id_user}", function ($request, $response) {
+  $id_user = $request->getAttribute('id_user');
+  $db = $this->db;
+  $db->select("a.id_promo, a.type, a.nama, a.diskon, a.nominal, a.kadaluarsa, a.syarat_ketentuan, a.foto")
+    ->from("m_promo a")
+    ->leftJoin("m_voucher b", "a.id_promo = b.id_promo")
+    ->where("a.is_deleted", "=", 0)
+    ->andWhere('b.id_user', '=', $id_user)
+    ->andWhere('b.status', '=', 1)
+    ->limit(2)
+    ->orderBy("type", "asc");
+  $voucher = $db->findAll();
+
+  $db->select("a.id_promo, a.type, a.nama, a.diskon, a.nominal, a.kadaluarsa, a.syarat_ketentuan, a.foto")
+    ->from("m_promo a")
+    ->leftJoin("m_diskon b", "a.id_promo = b.id_promo")
+    ->where("a.is_deleted", "=", 0)
+    ->andWhere('b.id_user', '=', $id_user)
+    ->andWhere('b.status', '=', 1)
+    ->limit(2)
+    ->orderBy("type", "asc");
+  $diskon = $db->findAll();
+
+  $promo = array_merge($voucher, $diskon);
+
+  if (empty($promo)) {
+    return nocontentResponse($response);
+  }
+
+  return successResponse($response, $promo);
+});
+
+// ambil semua promo aktif
+
 $app->get("/promo/type/{type}", function ($request, $response) {
   $type = $request->getAttribute('type');
   $db = $this->db;
@@ -54,4 +88,19 @@ $app->get("/promo/detail/{id_promo}", function ($request, $response) {
   return successResponse($response, $promo);
 });
 
-?>
+/**
+ * Insert new promo
+ */
+$app->post("/promo/add", function ($request, $response) {
+  $params = $request->getParams();
+  $db = $this->db;
+
+  try {
+    $params['created_at'] = time();
+
+    $promo = $db->insert("m_promo", $params);
+    return successResponse($response, $promo);
+  } catch (Exception $e) {
+    return unprocessResponse($response, ["Terjadi masalah pada server"]);
+  }
+});

@@ -108,17 +108,19 @@ function errorHandler($error_level, $error_message, $error_file, $error_line, $e
 function shutdownHandler()
 {
     $lasterror = error_get_last();
-    switch ($lasterror['type']) {
-        case E_ERROR:
-        case E_CORE_ERROR:
-        case E_COMPILE_ERROR:
-        case E_USER_ERROR:
-        case E_RECOVERABLE_ERROR:
-        case E_CORE_WARNING:
-        case E_COMPILE_WARNING:
-        case E_PARSE:
-            $error = "[SHUTDOWN] lvl:" . $lasterror['type'] . " \nMessage:" . $lasterror['message'] . " \nFile:" . $lasterror['file'] . " line:" . $lasterror['line'];
-            mylog($error, "fatal");
+    if (isset($lasterror)) {
+        switch ($lasterror['type']) {
+            case E_ERROR:
+            case E_CORE_ERROR:
+            case E_COMPILE_ERROR:
+            case E_USER_ERROR:
+            case E_RECOVERABLE_ERROR:
+            case E_CORE_WARNING:
+            case E_COMPILE_WARNING:
+            case E_PARSE:
+                $error = "[SHUTDOWN] lvl:" . $lasterror['type'] . " \nMessage:" . $lasterror['message'] . " \nFile:" . $lasterror['file'] . " line:" . $lasterror['line'];
+                mylog($error, "fatal");
+        }
     }
 }
 function mylog($error, $errlvl)
@@ -167,12 +169,20 @@ function successResponse($response, $message)
         ->withStatus(200);
 }
 function nocontentResponse($response)
-{
+{   
     return $response->write(json_encode([
         'status_code' => 204,
     ]))->withHeader('Access-Control-Allow-Origin', '*')
         ->withHeader('content-type', 'application/json')
-        ->withStatus(204);
+        ->withStatus(200);
+}
+function notmodifiedResponse($response)
+{
+    return $response->write(json_encode([
+        'status_code' => 304,
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(200);
 }
 function unprocessResponse($response, $message)
 {
@@ -181,7 +191,7 @@ function unprocessResponse($response, $message)
         'errors' => $message,
     ]))->withHeader('Access-Control-Allow-Origin', '*')
         ->withHeader('content-type', 'application/json')
-        ->withStatus(422);
+        ->withStatus(200);
 }
 function unauthorizedResponse($response, $message)
 {
@@ -190,7 +200,7 @@ function unauthorizedResponse($response, $message)
         'errors' => $message,
     ]))->withHeader('Access-Control-Allow-Origin', '*')
         ->withHeader('content-type', 'application/json')
-        ->withStatus(403);
+        ->withStatus(200);
 }
 function validate($data, $validasi, $custom = [])
 {

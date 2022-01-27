@@ -10,7 +10,7 @@ function validasi($data, $custom = array())
     return $cek;
 }
 
-$app->get('/', function ($request, $responsep) {
+$app->get('/', function ($request, $response) {
     return unprocessResponse($response, ['can`t find any route with this end point']);
 });
 
@@ -65,14 +65,12 @@ $app->post('/auth/login', function ($request, $response) {
                     ];
 
                     send_mail($db, $mail);
-
                 } catch (Exception $e) {
                     return unprocessResponse($response, ["Terjadi masalah pada server"]);
                 }
 
                 $user = get_account($db, $params['email']);
             }
-
         } else {
             $validasi = validasi($params, ["password" => "required"]);
 
@@ -105,18 +103,51 @@ $app->post('/auth/login', function ($request, $response) {
         $_SESSION['user']['email'] = $user->email;
         $_SESSION['user']['nama'] = $user->nama;
         $_SESSION['user']['pin'] = $user->pin;
+        $_SESSION['user']['foto'] = $user->foto;
         $_SESSION['user']['m_roles_id'] = $user->m_roles_id;
         $_SESSION['user']['is_google'] = $user->is_google;
+        $_SESSION['user']['is_customer'] = $user->is_customer;
+        $_SESSION['user']['roles'] = $user->roles;
         $_SESSION['user']['akses'] = json_decode($user->akses);
         $_SESSION['token'] = token();
 
         return successResponse($response, $_SESSION);
-
     } else {
         return unprocessResponse($response, $validasi);
     }
-
 })->setName('login');
+
+/**
+ * Ambil semua roles aktif
+ */
+$app->get("/auth/roles", function ($request, $response) {
+    $db = $this->db;
+    $db->select("a.*")
+        ->from('m_roles a')
+        ->where("a.is_deleted", "=", 0);
+    $roles = $db->findAll();
+
+    if (empty($roles)) {
+        return nocontentResponse($response);
+    }
+
+    return successResponse($response, $roles);
+});
+
+/**
+ * Ambil semua roles aktif
+ */
+$app->post("/auth/akses", function ($request, $response) {
+    $params = $request->getParams();
+    $db = $this->db;
+
+    try {
+        $roles = $db->insert("m_roles", $params);
+        return successResponse($response, $roles);
+    } catch (Exception $e) {
+        return unprocessResponse($response, ["Terjadi masalah pada server"]);
+    }
+});
 /**
  * Hapus semua session
  */

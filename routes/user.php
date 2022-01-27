@@ -22,10 +22,11 @@ function validasi($data, $custom = array())
  */
 $app->get("/user", function ($request, $response) {
     $db = $this->db;
-    $db->select("a.id_user, a.nama, a.email, a.tgl_lahir, a.alamat, a.telepon, a.foto, a.ktp, a.status, a.m_roles_id as roles_id, b.nama as roles")
+    $db->select("a.id_user, a.nama, a.email, a.tgl_lahir, a.alamat, a.telepon, a.foto, a.ktp, a.status, a.m_roles_id as roles_id, a.is_customer, b.nama as roles")
         ->from('m_user a')
         ->leftJoin('m_roles b', 'a.m_roles_id = b.id')
-        ->where("a.is_deleted", "=", 0);
+        ->where("a.is_deleted", "=", 0)
+        ->andWhere("a.is_customer", "=", 1);
     $user = $db->findAll();
 
     if (empty($user)) {
@@ -84,7 +85,31 @@ $app->post("/user/update/{id_user}", function ($request, $response) {
         $user = $db->update("m_user", $params, ["id_user" => $id_user]);
         return successResponse($response, $user);
     } catch (Exception $e) {
-        return unprocessResponse($response, ["Terjadi masalah pada server"]);
+        return unprocessResponse($response, ["Terjadi masalah pada server: " . $e]);
+    }
+});
+
+/**
+ * Update detail user
+ */
+$app->post("/user/add", function ($request, $response) {
+    $params = $request->getParams();
+    $db = $this->db;
+
+    $data = array(
+        "nama" => $params['nama'],
+        "email" => $params['email'],
+        "foto" => (isset($params['foto']) ? $params['foto'] : ''),
+        "password" => sha1($params['password']),
+        "m_roles_id" => $params['m_roles_id'],
+        "is_customer" => 0
+    );
+
+    try {
+        $user = $db->insert("m_user", $data);
+        return successResponse($response, $user);
+    } catch (Exception $e) {
+        return unprocessResponse($response, ["Terjadi masalah pada server: " . $e]);
     }
 });
 
@@ -96,7 +121,7 @@ $app->post("/user/profil/{id_user}", function ($request, $response) {
     $params = $request->getParams();
     $db = $this->db;
 
-    $folder = config('PATH_IMG');
+    $folder = config('PATH_IMG') . "{$id_user}/profil/";
 
     if (!is_dir($folder)) {
         mkdir($folder, 0777, true);
@@ -106,7 +131,7 @@ $app->post("/user/profil/{id_user}", function ($request, $response) {
 
     $simpan_foto = base64ToFile(['base64' => $params['image']], $folder, $name);
 
-    $foto = config('SITE_IMG') . $simpan_foto['fileName'];
+    $foto = config('SITE_IMG') . "{$id_user}/profil/" . $simpan_foto['fileName'];
 
     try {
         $user = $db->update("m_user", ['foto' => $foto], ["id_user" => $id_user]);
@@ -121,7 +146,7 @@ $app->post("/user/ktp/{id_user}", function ($request, $response) {
     $params = $request->getParams();
     $db = $this->db;
 
-    $folder = config('PATH_IMG');
+    $folder = config('PATH_IMG') . "{$id_user}/ktp/";
 
     if (!is_dir($folder)) {
         mkdir($folder, 0777, true);
@@ -131,10 +156,10 @@ $app->post("/user/ktp/{id_user}", function ($request, $response) {
 
     $simpan_foto = base64ToFile(['base64' => $params['image']], $folder, $name);
 
-    $foto = config('SITE_IMG') . $simpan_foto['fileName'];
+    $foto = config('SITE_IMG') . "{$id_user}/ktp/" . $simpan_foto['fileName'];
 
     try {
-        $user = $db->update("m_user", ['ktp' => $foto], ["id_user" => $id_user]);
+        $user = $db->update("m_user", ['ktp' => $foto, 'status' => 1], ["id_user" => $id_user]);
         return successResponse($response, $user);
     } catch (Exception $e) {
         return unprocessResponse($response, ["Terjadi masalah pada server"]);

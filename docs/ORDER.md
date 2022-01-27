@@ -781,3 +781,68 @@ none.
 
 </p>
 </details>
+
+# #POST / order batal
+
+**endpoint**
+```
+https://javacode.ngodingin.com/api/order/batal/{id_order}
+```
+
+### Request header
+
+<details><summary>Headers</summary>
+<p>
+
+>    id_order: integer
+
+</p>
+</details>
+
+### Responses
+
+<details><summary>200</summary>
+<p>
+
+```
+{
+    "status_code": 200,
+    "data": {
+        "id_order": 60,
+        "no_struk": "009/KWT/01/2022",
+        "id_user": 1,
+        "tanggal": "2022-01-21",
+        "id_voucher": 1,
+        "id_diskon": "",
+        "diskon": 0,
+        "potongan": 45000,
+        "total_bayar": 12800,
+        "status": 4,
+        "is_deleted": 0
+    }
+}
+```
+
+</p>
+</details>
+<details><summary>304</summary>
+<p>
+
+> This mean the order already change status like already prepare by kitchen
+
+</p>
+</details>
+<details><summary>422</summary>
+<p>
+
+```
+{
+    "status_code": 422,
+    "errors": [
+        "Terjadi masalah pada server"
+    ]
+}
+```
+
+</p>
+</details>

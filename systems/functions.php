@@ -69,10 +69,6 @@ function send_mail($db, $params)
 
   $user = get_user($db, $params['id_user']);
 
-  if (empty($user)) {
-    nocontentResponse($response);
-  }
-
   $data = [
     'name' => $user->nama,
     'to' => $user->email,
@@ -85,7 +81,7 @@ function send_mail($db, $params)
 // Database function
 function get_account($db, $email)
 {
-  $db->select("m_user.*, m_roles.akses")
+  $db->select("m_user.*, m_roles.nama as roles, m_roles.akses")
     ->from("m_user")
     ->leftJoin("m_roles", "m_roles.id = m_user.m_roles_id")
     ->where("email", "=", $email);
@@ -123,6 +119,15 @@ function get_orderDetail($db, $id_order)
   return $menu;
 }
 
+function get_order($db, $id_order)
+{
+  $db->select("*")
+    ->from("m_order a")
+    ->where("a.id_order", "=", $id_order);
+  $order = $db->find();
+  return $order;
+}
+
 function orderVoucher($db, $id_voucher, $nominal)
 {
 
@@ -134,19 +139,20 @@ function orderVoucher($db, $id_voucher, $nominal)
   if (isset($voucher->id_voucher)) {
     $nominal = ($voucher->nominal - $nominal) <= 0 ? 0 : ($voucher->nominal - $nominal);
     if ($voucher->type === 1) {
-    // berkurang
+      // berkurang
       $status = 1;
       $data = [
         'nominal' => $nominal,
         'status' => $nominal <= 0 ? 0 : 1
       ];
     } else {
-    // sekali pakai
+      // sekali pakai
       $data = [
         'nominal' => $nominal,
         'status' => 0
       ];
     }
+    $db->update('m_promo', ['nominal' => $nominal], ['id_promo' => $voucher->id_promo]);
 
     return $db->update('m_voucher', $data, ['id_voucher' => $id_voucher]);
   }
@@ -159,5 +165,4 @@ function orderDiskon($db, $id_diskon)
   foreach ($id as $key) {
     $db->update('m_diskon', ['status' => 0], ['id_diskon' => $key]);
   }
-
 }

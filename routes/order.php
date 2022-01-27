@@ -27,8 +27,13 @@ $app->post("/order/add", function ($request, $response) {
 
   $id_diskon = (isset($params['order']['id_diskon']) ? json_encode($params['order']['id_diskon']) : "");
   $diskon = (isset($params['order']['diskon']) ? $params['order']['diskon'] : "");
-
   $potongan = (isset($params['order']['potongan']) ? $params['order']['potongan'] : "");
+
+  if ($params['order']['total_bayar'] === 0) {
+    $potongan = $params['order']['total_order'];
+  } else {
+    $potongan = $params['order']['total_bayar'] - $params['order']['total_order'];
+  }
 
   try {
 
@@ -50,30 +55,31 @@ $app->post("/order/add", function ($request, $response) {
 
       $level = (isset($menu['level']) ? $menu['level'] : "");
       $topping = (isset($menu['topping']) ? json_encode($menu['topping']) : "");
+      $catatan = (isset($menu['catatan']) ? json_encode($menu['catatan']) : "");
 
       $menu = [
-        'id_menu' => ($menu['id_menu'] * $menu['id_menu']),
+        'id_menu' => $menu['id_menu'],
         'id_order' => $order->id_order,
         'total' => ($menu['harga'] * $menu['jumlah']),
         'level' => $level,
         'topping' => $topping,
         'jumlah' => $menu['jumlah'],
-        'catatan' => $menu['catatan']
+        'catatan' => $catatan
       ];
 
       $detail = $db->insert("m_detail_order", $menu);
     }
 
     if (isset($id_voucher)) {
-    #minus voucher
+      #minus voucher
       orderVoucher($db, $id_voucher, $potongan);
     }
 
-    if (isset($id_diskon)) {
-    #minus diskon
+    if (isset($id_diskon) && $diskon != 0) {
+      #minus diskon
       orderDiskon($db, $id_diskon);
     }
-  // param for return
+    // param for return
     $return = [
       'id_order' => $order->id_order,
       'no_struk' => $no_struk,
@@ -253,4 +259,23 @@ $app->get("/order/detail/{id_order}", function ($request, $response) {
   $data['detail'] = get_orderDetail($db, $id_order);
 
   return successResponse($response, $data);
+});
+
+$app->post("/order/batal/{id_order}", function ($request, $response) {
+  $id_order = $request->getAttribute('id_order');
+  $db = $this->db;
+
+  $order = get_order($db, $id_order);
+
+  if (isset($order) && $order->status === 0) {
+    try {
+      $batal = $db->update('m_order', ['status' => 4], ['id_order' => $id_order]);
+
+      return successResponse($response, $batal);
+    } catch (Exception $e) {
+      return unprocessResponse($response, ["Terjadi masalah pada server"]);
+    }
+  }
+
+  return notmodifiedResponse($response);
 });
