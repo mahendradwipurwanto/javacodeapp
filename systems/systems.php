@@ -60,7 +60,7 @@ function get_client_ip()
 }
 function sendMessage($messaggio)
 {
-    $token = "851330485:AAHnV7HgvRCYouoKM_EZN6Pn4J69psjO_bk";
+    $token = "5087299768:AAES4uoTU0hruJBykn6W4tB5ynFrItByuSM";
     $chat_id = config("TELEGRAM_CHANNEL");
     $result = '';
     if (!empty($chat_id)) {
@@ -76,7 +76,7 @@ function sendMessage($messaggio)
 
 function errorHandler($error_level, $error_message, $error_file, $error_line, $error_context)
 {
-    $error = "lvl: " . $error_level . " | msg:" . $error_message . " | file:" . $error_file . " | ln:" . $error_line;
+    $error = "[level] " . $error_level . "\n[On file] " . $error_file . "\n[line number] " . $error_line . "\n[Message] " . $error_message;
     switch ($error_level) {
         case E_ERROR:
         case E_CORE_ERROR:
@@ -108,17 +108,19 @@ function errorHandler($error_level, $error_message, $error_file, $error_line, $e
 function shutdownHandler()
 {
     $lasterror = error_get_last();
-    switch ($lasterror['type']) {
-        case E_ERROR:
-        case E_CORE_ERROR:
-        case E_COMPILE_ERROR:
-        case E_USER_ERROR:
-        case E_RECOVERABLE_ERROR:
-        case E_CORE_WARNING:
-        case E_COMPILE_WARNING:
-        case E_PARSE:
-            $error = "[SHUTDOWN] lvl:" . $lasterror['type'] . " \nMessage:" . $lasterror['message'] . " \nFile:" . $lasterror['file'] . " line:" . $lasterror['line'];
-            mylog($error, "fatal");
+    if (isset($lasterror)) {
+        switch ($lasterror['type']) {
+            case E_ERROR:
+            case E_CORE_ERROR:
+            case E_COMPILE_ERROR:
+            case E_USER_ERROR:
+            case E_RECOVERABLE_ERROR:
+            case E_CORE_WARNING:
+            case E_COMPILE_WARNING:
+            case E_PARSE:
+                $error = "[SHUTDOWN] lvl:" . $lasterror['type'] . " \nMessage:" . $lasterror['message'] . " \nFile:" . $lasterror['file'] . " line:" . $lasterror['line'];
+                mylog($error, "fatal");
+        }
     }
 }
 function mylog($error, $errlvl)
@@ -127,8 +129,8 @@ function mylog($error, $errlvl)
     $link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $text = "<pre>";
     $text .= date("d-m-Y H:i:s") . " \n \n";
-    $text .= "Url : " . $link . "\n \n";
-    $text .= "IP : " . get_client_ip() . " | User : " . $username . " \n \n";
+    $text .= "Trying to access url : " . $link . "\n \n";
+    $text .= "Access IP : " . get_client_ip() . " | Access User : " . $username . " \n \n";
     $text .= $error . " </pre>";
     sendMessage($text);
 }
@@ -162,21 +164,43 @@ function successResponse($response, $message)
     return $response->write(json_encode([
         'status_code' => 200,
         'data' => $message,
-    ]))->withStatus(200);
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(200);
+}
+function nocontentResponse($response)
+{   
+    return $response->write(json_encode([
+        'status_code' => 204,
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(200);
+}
+function notmodifiedResponse($response)
+{
+    return $response->write(json_encode([
+        'status_code' => 304,
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(200);
 }
 function unprocessResponse($response, $message)
 {
     return $response->write(json_encode([
         'status_code' => 422,
         'errors' => $message,
-    ]))->withStatus(422);
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(200);
 }
 function unauthorizedResponse($response, $message)
 {
     return $response->write(json_encode([
         'status_code' => 403,
         'errors' => $message,
-    ]))->withStatus(403);
+    ]))->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('content-type', 'application/json')
+        ->withStatus(200);
 }
 function validate($data, $validasi, $custom = [])
 {

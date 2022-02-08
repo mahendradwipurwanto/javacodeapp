@@ -3,31 +3,16 @@
 function validasi($data, $custom = array())
 {
     $validasi = array(
-        "username" => "required",
-        "password" => "required",
+        "email" => "required"
     );
 
     $cek = validate($data, $validasi, $custom);
     return $cek;
 }
 
-$app->get('/', function ($request, $responsep) {
-    return unprocessResponse($response, ['can`t find any route with this end point'])
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('content-type', 'application/json');
+$app->get('/', function ($request, $response) {
+    return unprocessResponse($response, ['can`t find any route with this end point']);
 });
-
-/**
- * Ambil session user
- */
-$app->get('/auth/session', function ($request, $response) {
-    if (isset($_SESSION['user']['m_roles_id'])) {
-        return successResponse($response, $_SESSION);
-    }
-    return unprocessResponse($response, ['can`t find session'])
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('content-type', 'application/json');
-})->setName('session');
 
 /**
  * Proses login
@@ -36,60 +21,109 @@ $app->post('/auth/login', function ($request, $response) {
     $params = $request->getParams();
     $db = $this->db;
 
-    // cek if user name or password exist
     $validasi = validasi($params);
 
-    if (!isset($params['username']) || !isset($params['password'])) {
-        return unprocessResponse($response, $validasi)
-            ->withHeader('Access-Control-Allow-Origin', '*')
-            ->withHeader('content-type', 'application/json');
+    if ($validasi === true) {
+
+        $user = get_account($db, $params['email']);
+
+        if (isset($params['is_google']) && $params['is_google'] == "is_google") {
+
+            if (!isset($user->id_user)) {
+                $validasi = validasi($params, ["nama" => "required"]);
+
+                if ($validasi !== true) {
+                    return unprocessResponse($response, $validasi);
+                }
+
+                try {
+                    $password = create_password();
+
+                    $input = [
+                        'nama' => $params['nama'],
+                        'email' => $params['email'],
+                        'password' => sha1($password),
+                        'is_google' => true
+                    ];
+
+                    $user = $db->insert('m_user', $input);
+
+                    $mail = [
+                        'id_user' => $user->id_user,
+                        'subject' => "Selamat bergabung di JavaCodeAPP Cafe",
+                        'message' => "Hai {$user->nama}, selamat bergabung di javacodeapp cafe, berikut password untuk akun anda {$password}",
+                    ];
+
+                    send_mail($db, $mail);
+                } catch (Exception $e) {
+                    return unprocessResponse($response, ["Terjadi masalah pada server"]);
+                }
+
+                $user = get_account($db, $params['email']);
+            }
+        } else {
+            $validasi = validasi($params, ["password" => "required"]);
+
+            if ($validasi !== true) {
+                return unprocessResponse($response, $validasi);
+            }
+
+            if (!isset($user->id_user)) {
+                return nocontentResponse($response);
+            }
+
+            if (sha1($params['password']) !== $user->password) {
+                return unprocessResponse($response, ['Password yang anda masukkan salah !']);
+            }
+        }
+
+        if ($user->pin == 111111) {
+
+            $mail = [
+                'id_user' => $user->id_user,
+                'subject' => "PIN JavaCodeAPP Cafe",
+                'message' => "Hai {$user->nama}, akunmu masih menggunakan PIN default. Harap segera ubah pin.",
+            ];
+
+            send_mail($db, $mail);
+        }
+
+
+        $_SESSION['user']['id_user'] = $user->id_user;
+        $_SESSION['user']['email'] = $user->email;
+        $_SESSION['user']['nama'] = $user->nama;
+        $_SESSION['user']['pin'] = $user->pin;
+        $_SESSION['user']['foto'] = $user->foto;
+        $_SESSION['user']['m_roles_id'] = $user->m_roles_id;
+        $_SESSION['user']['is_google'] = $user->is_google;
+        $_SESSION['user']['is_customer'] = $user->is_customer;
+        $_SESSION['user']['roles'] = $user->roles;
+        $_SESSION['user']['akses'] = json_decode($user->akses);
+        $_SESSION['token'] = token();
+
+        return successResponse($response, $_SESSION);
+    } else {
+        return unprocessResponse($response, $validasi);
     }
-
-    $username = isset($params['username']) ? $params['username'] : '';
-    $password = isset($params['password']) ? $params['password'] : '';
-
-    /**
-     * Get data
-     */
-    $db->select("m_user.*, m_roles.akses")
-        ->from("m_user")
-        ->leftJoin("m_roles", "m_roles.id = m_user.m_roles_id")
-        ->where("username", "=", $username);
-    $model = $db->find();
-
-    if (!isset($model->id_user)) {
-        return unprocessResponse($response, ['Mohon maaf tidak dapat menemukan data anda !'])
-            ->withHeader('Access-Control-Allow-Origin', '*')
-            ->withHeader('content-type', 'application/json');
-    }
-
-    /**
-     * Simpan user ke dalam session
-     */
-    if (sha1($password) == $model->password) {
-        $_SESSION['user']['id_user'] = $model->id_user;
-        $_SESSION['user']['username'] = $model->username;
-        $_SESSION['user']['nama'] = $model->nama;
-        $_SESSION['user']['m_roles_id'] = $model->m_roles_id;
-        $_SESSION['user']['akses'] = json_decode($model->akses);
-        $_SESSION['token'] = "m_app";
-
-        return successResponse($response, $_SESSION)
-            ->withHeader('Access-Control-Allow-Origin', '*')
-            ->withHeader('content-type', 'application/json');
-    }
-
-    return unprocessResponse($response, ['Password yang anda masukkan salah !'])
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('content-type', 'application/json');
-
 })->setName('login');
+
+/**
+ * Ambil session user
+ */
+$app->get('/auth/session', function ($request, $response) {
+    if (isset($_SESSION['user']['m_roles_id'])) {
+        return successResponse($response, $_SESSION);
+    }
+    return unprocessResponse($response, ['can`t find session']);
+})->setName('session');
+
 /**
  * Hapus semua session
  */
 $app->get('/auth/logout', function ($request, $response) {
+    if (!isset($_SESSION['user']['m_roles_id'])) {
+        return successResponse($response, ['Anda telah logout']);
+    }
     session_destroy();
-    return successResponse($response, ['Berhasil logout'])
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('content-type', 'application/json');
+    return successResponse($response, ['Berhasil logout']);
 })->setName('logout');

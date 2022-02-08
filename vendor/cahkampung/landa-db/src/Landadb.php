@@ -74,7 +74,7 @@ class Landadb extends \PDO
 
         if (isset($this->db_setting['DISPLAY_ERRORS']) && $this->db_setting['DISPLAY_ERRORS'] == 'true') {
             $arr = array(
-                \PDO::ATTR_ERRMODE          => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_EMULATE_PREPARES => false,
             );
         } else {
@@ -142,15 +142,15 @@ class Landadb extends \PDO
      */
     public function clearQuery()
     {
-        $this->columns      = null;
-        $this->join_table   = null;
-        $this->bind_param   = null;
-        $this->limit        = null;
-        $this->offset       = null;
-        $this->orderBy      = null;
-        $this->groupBy      = null;
+        $this->columns = null;
+        $this->join_table = null;
+        $this->bind_param = null;
+        $this->limit = null;
+        $this->offset = null;
+        $this->orderBy = null;
+        $this->groupBy = null;
         $this->where_clause = null;
-        $this->table        = null;
+        $this->table = null;
     }
 
     /**
@@ -181,8 +181,8 @@ class Landadb extends \PDO
      */
     public function get_field($table)
     {
-        $stmt         = $this->query("DESCRIBE $table");
-        $list         = $stmt->fetchAll($this::FETCH_OBJ);
+        $stmt = $this->query("DESCRIBE $table");
+        $list = $stmt->fetchAll($this::FETCH_OBJ);
         $table_fields = array();
         foreach ($list as $val) {
             $table_fields[] = $val->Field;
@@ -199,8 +199,8 @@ class Landadb extends \PDO
      */
     public function field_filter($table, $data)
     {
-        $stmt         = $this->query("DESCRIBE $table");
-        $list         = $stmt->fetchAll($this::FETCH_OBJ);
+        $stmt = $this->query("DESCRIBE $table");
+        $list = $stmt->fetchAll($this::FETCH_OBJ);
         $table_fields = array();
         foreach ($list as $val) {
             $table_fields[] = $val->Field;
@@ -263,14 +263,14 @@ class Landadb extends \PDO
     {
         if (isset($this->db_setting['USER_LOG']) && !empty($this->db_setting['USER_LOG']) && $this->db_setting['USER_LOG'] == true) {
             $logfolder = isset($this->db_setting['LOG_FOLDER']) ? $this->db_setting['LOG_FOLDER'] : 'userlog';
-            $folder    = $logfolder . '/' . date("m-Y");
+            $folder = $logfolder . '/' . date("m-Y");
             if (!file_exists($folder)) {
                 mkdir($folder, 0777, true);
             }
 
-            $userId   = isset($this->db_setting['USER_ID']) ? $this->db_setting['USER_ID'] : 0;
+            $userId = isset($this->db_setting['USER_ID']) ? $this->db_setting['USER_ID'] : 0;
             $userNama = isset($this->db_setting['USER_NAMA']) ? $this->db_setting['USER_NAMA'] : 0;
-            $msg      = date("d-m-Y H:i:s")." (".$this->get_client_ip().") : $userNama (id : $userId) $message $id";
+            $msg = date("d-m-Y H:i:s") . " (" . $this->get_client_ip() . ") : $userNama (id : $userId) $message $id";
 
             file_put_contents($folder . '/' . date("d-m-Y") . '.log', $msg . "\n", FILE_APPEND);
         }
@@ -290,7 +290,7 @@ class Landadb extends \PDO
         $data = array_merge($this->modified(), $data);
 
         $fields = $this->field_filter($table, $data);
-        $sql    = "INSERT INTO " . $table . " (" . implode($fields, ", ") . ") VALUES (:" . implode($fields, ", :") . ");";
+        $sql = "INSERT INTO {$table} (" . implode(", ", $fields) . ") VALUES (:" . implode(", :", $fields) . ")";
 
         foreach ($fields as $field) {
             $bind[":$field"] = $data[$field];
@@ -320,8 +320,8 @@ class Landadb extends \PDO
     {
         $bind = [];
 
-        $data          = $this->modified() + $data;
-        $created       = array_keys($this->created());
+        $data = $this->modified() + $data;
+        $created = array_keys($this->created());
         $created_field = isset($created[1]) ? $created[1] : '';
         if (isset($data[$created_field])) {
             unset($data[$created_field]);
@@ -330,7 +330,7 @@ class Landadb extends \PDO
         /** Set field value */
         $fields = $this->field_filter($table, $data);
         foreach ($fields as $key => $val) {
-            $set[]                = "$val = :update_" . $val;
+            $set[] = "$val = :update_" . $val;
             $bind[":update_$val"] = $data[$val];
         }
 
@@ -544,7 +544,7 @@ class Landadb extends \PDO
         $where = $this->where_clause;
 
         $jml = is_array($this->bind_param) ? count($this->bind_param) : 0;
-        $i   = $jml + 1;
+        $i = $jml + 1;
 
         if (empty($this->where_clause)) {
             $where = trim($column) . " $filter :where_" . $this->clean($column) . $i;
@@ -645,7 +645,7 @@ class Landadb extends \PDO
             $sql .= ' WHERE ' . $this->where_clause;
         }
 
-        $exec  = $this->run(trim($sql), $this->bind_param);
+        $exec = $this->run(trim($sql), $this->bind_param);
         $count = $exec->fetch($this::FETCH_OBJ);
         return isset($count->jumlah) ? $count->jumlah : 0;
     }
@@ -709,7 +709,7 @@ class Landadb extends \PDO
             $query = $this->prepareQuery();
         } else {
             $query['query'] = $sql;
-            $query['bind']  = array();
+            $query['bind'] = array();
         }
 
         $exec = $this->run(trim($query['query']), $query['bind']);
@@ -727,7 +727,7 @@ class Landadb extends \PDO
             $query = $this->prepareQuery();
         } else {
             $query['query'] = $sql;
-            $query['bind']  = array();
+            $query['bind'] = array();
         }
 
         $exec = $this->run(trim($query['query']), $query['bind']);
@@ -785,7 +785,7 @@ class Landadb extends \PDO
             $query = $this->prepareQuery();
         } else {
             $query['query'] = $sql;
-            $query['bind']  = array();
+            $query['bind'] = array();
         }
 
         if ($return == false) {
