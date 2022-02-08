@@ -77,25 +77,3 @@ $app->get("/menu/detail/{id_menu}", function ($request, $response) {
 
   return successResponse($response, $data);
 });
-
-/**
- * Insert new menu
- */
-$app->post("/menu/add", function ($request, $response) {
-  $params = $request->getParams();
-  $db = $this->db;
-
-  $validasi = validasi($params);
-
-  if ($validasi === true) {
-    try {
-      $params['created_at'] = time();
-
-      $menu = $db->insert("m_menu", $params);
-      return successResponse($response, $menu);
-    } catch (Exception $e) {
-      return unprocessResponse($response, ["Terjadi masalah pada server"]);
-    }
-  }
-  return unprocessResponse($response, $validasi);
-});

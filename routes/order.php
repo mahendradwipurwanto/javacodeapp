@@ -23,11 +23,11 @@ $app->post("/order/add", function ($request, $response) {
 
   $no_struk = create_struk($db);
 
-  $id_voucher = (isset($params['order']['id_voucher']) ? $params['order']['id_voucher'] : "");
+  $id_voucher = (isset($params['order']['id_voucher']) ? $params['order']['id_voucher'] : 0);
 
-  $id_diskon = (isset($params['order']['id_diskon']) ? json_encode($params['order']['id_diskon']) : "");
-  $diskon = (isset($params['order']['diskon']) ? $params['order']['diskon'] : "");
-  $potongan = (isset($params['order']['potongan']) ? $params['order']['potongan'] : "");
+  $id_diskon = (isset($params['order']['id_diskon']) ? json_encode($params['order']['id_diskon']) : '');
+  $diskon = (isset($params['order']['diskon']) ? $params['order']['diskon'] : 0);
+  $potongan = (isset($params['order']['potongan']) ? $params['order']['potongan'] : 0);
 
   if ($params['order']['total_bayar'] === 0) {
     $potongan = $params['order']['total_order'];
@@ -53,9 +53,9 @@ $app->post("/order/add", function ($request, $response) {
 
     foreach ($params['menu'] as $menu) {
 
-      $level = (isset($menu['level']) ? $menu['level'] : "");
-      $topping = (isset($menu['topping']) ? json_encode($menu['topping']) : "");
-      $catatan = (isset($menu['catatan']) ? json_encode($menu['catatan']) : "");
+      $level = (isset($menu['level']) ? $menu['level'] : 0);
+      $topping = (isset($menu['topping']) ? json_encode($menu['topping']) : '');
+      $catatan = (isset($menu['catatan']) ? json_encode($menu['catatan']) : '');
 
       $menu = [
         'id_menu' => $menu['id_menu'],
@@ -121,6 +121,8 @@ $app->get("/order/all", function ($request, $response) {
   return successResponse($response, $data);
 });
 
+// list order of one user
+
 $app->get("/order/user/{id_user}", function ($request, $response) {
   $id_user = $request->getAttribute('id_user');
   $db = $this->db;
@@ -149,6 +151,8 @@ $app->get("/order/user/{id_user}", function ($request, $response) {
 
   return successResponse($response, $data);
 });
+
+// list order of one user filter by status
 
 $app->get("/order/status/{id_user}/{status}", function ($request, $response) {
   $id_user = $request->getAttribute('id_user');
@@ -181,6 +185,8 @@ $app->get("/order/status/{id_user}/{status}", function ($request, $response) {
   return successResponse($response, $data);
 });
 
+// list order of user with status still process
+
 $app->get("/order/proses/{id_user}", function ($request, $response) {
   $db = $this->db;
   $id_user = $request->getAttribute('id_user');
@@ -212,6 +218,8 @@ $app->get("/order/proses/{id_user}", function ($request, $response) {
   return successResponse($response, $data);
 });
 
+// list order history of one user
+
 $app->get("/order/history/{id_user}", function ($request, $response) {
   $id_user = $request->getAttribute('id_user');
   $db = $this->db;
@@ -242,6 +250,8 @@ $app->get("/order/history/{id_user}", function ($request, $response) {
 
   return successResponse($response, $data);
 });
+
+// detail of order
 
 $app->get("/order/detail/{id_order}", function ($request, $response) {
   $id_order = $request->getAttribute('id_order');
@@ -278,4 +288,15 @@ $app->post("/order/batal/{id_order}", function ($request, $response) {
   }
 
   return notmodifiedResponse($response);
+});
+
+$app->get("/order/statistik", function ($request, $response) {
+  $db = $this->db;
+
+  $data['yesterday'] = get_orderStatistik($db, 1);
+  $data['today'] = get_orderStatistik($db, 2);
+  $data['last_month'] = get_orderStatistik($db, 3);
+  $data['this_month'] = get_orderStatistik($db, 4);
+
+  return successResponse($response, $data);
 });

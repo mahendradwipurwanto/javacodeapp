@@ -15,16 +15,6 @@ $app->get('/', function ($request, $response) {
 });
 
 /**
- * Ambil session user
- */
-$app->get('/auth/session', function ($request, $response) {
-    if (isset($_SESSION['user']['m_roles_id'])) {
-        return successResponse($response, $_SESSION);
-    }
-    return unprocessResponse($response, ['can`t find session']);
-})->setName('session');
-
-/**
  * Proses login
  */
 $app->post('/auth/login', function ($request, $response) {
@@ -118,36 +108,15 @@ $app->post('/auth/login', function ($request, $response) {
 })->setName('login');
 
 /**
- * Ambil semua roles aktif
+ * Ambil session user
  */
-$app->get("/auth/roles", function ($request, $response) {
-    $db = $this->db;
-    $db->select("a.*")
-        ->from('m_roles a')
-        ->where("a.is_deleted", "=", 0);
-    $roles = $db->findAll();
-
-    if (empty($roles)) {
-        return nocontentResponse($response);
+$app->get('/auth/session', function ($request, $response) {
+    if (isset($_SESSION['user']['m_roles_id'])) {
+        return successResponse($response, $_SESSION);
     }
+    return unprocessResponse($response, ['can`t find session']);
+})->setName('session');
 
-    return successResponse($response, $roles);
-});
-
-/**
- * Ambil semua roles aktif
- */
-$app->post("/auth/akses", function ($request, $response) {
-    $params = $request->getParams();
-    $db = $this->db;
-
-    try {
-        $roles = $db->insert("m_roles", $params);
-        return successResponse($response, $roles);
-    } catch (Exception $e) {
-        return unprocessResponse($response, ["Terjadi masalah pada server"]);
-    }
-});
 /**
  * Hapus semua session
  */

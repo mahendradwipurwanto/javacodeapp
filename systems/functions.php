@@ -166,3 +166,30 @@ function orderDiskon($db, $id_diskon)
     $db->update('m_diskon', ['status' => 0], ['id_diskon' => $key]);
   }
 }
+
+function get_orderStatistik($db, $where)
+{
+  $db->select("SUM(total_bayar) as TOTAL")
+    ->from("m_order");
+  $db->where("DAY(tanggal)", "=", "DAY(CURRENT_DATE())");
+
+  // yesterday
+  if ($where == 1) {
+    return $db->find("SELECT SUM(total_bayar) AS TOTAL FROM m_order WHERE DAY(tanggal) = DAY(CURRENT_DATE - INTERVAL 1 DAY)");
+  }
+
+  // today
+  if ($where == 2) {
+    return $db->find("SELECT SUM(total_bayar) AS TOTAL FROM m_order WHERE DAY(tanggal) = DAY(CURRENT_DATE())");
+  }
+
+  // last month
+  if ($where == 3) {
+    return $db->find("SELECT SUM(total_bayar) AS TOTAL FROM m_order WHERE MONTH(tanggal) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)");
+  }
+
+  // this month
+  if ($where == 4) {
+    return $db->find("SELECT SUM(total_bayar) AS TOTAL FROM m_order WHERE MONTH(tanggal) = MONTH(CURRENT_DATE())");
+  }
+}

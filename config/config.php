@@ -2,17 +2,17 @@
 $config = [
     'EMAIL_CLIENT' => '',
     'NAMA_CLIENT' => '',
-    'SITE_URL' => 'http://localhost:8080/landa_db/api/',
-    'SITE_IMG' => 'http://localhost:8080/landa_db/img/',
+    'SITE_URL' => 'https://javacode.ngodingin.com/api/',
+    'SITE_IMG' => 'https://javacode.ngodingin.com/img/',
     'PATH_IMG' => '../img/',
     // 'TELEGRAM_CHANNEL' => '-725536947',
     // 'TELEGRAM_LOG' => true,
     'DB' => [
         'db' => [
             'DB_HOST' => 'localhost',
-            'DB_USER' => 'root',
-            'DB_PASS' => '',
-            'DB_NAME' => 'u434309042_tim_a',
+            'DB_USER' => 'javacodeapp_cafe',
+            'DB_PASS' => 'GMIqz?VM~W}d',
+            'DB_NAME' => 'javacodeapp',
             'DB_CHARSET' => 'utf8',
             'CREATED_USER' => 'created_by',
             'CREATED_TIME' => 'created_at',
@@ -29,7 +29,3 @@ $config = [
     ],
     'DISPLAY_ERROR' => true, #error php
 ];
-
-// is_deleted int
-// modified_at int
-// modified_by 

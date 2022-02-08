@@ -22,7 +22,8 @@ $app->get("/voucher/all", function ($request, $response) {
     ->from('m_voucher a')
     ->innerJoin('m_promo b', 'a.id_promo = b.id_promo')
     ->leftJoin('m_user c', 'a.id_user = c.id_user')
-    ->where('b.type', '=', 'voucher');
+    ->where('b.type', '=', 'voucher')
+    ->andWhere('a.is_deleted', '=', 0);
 
   $voucher = $db->findAll();
 
@@ -65,29 +66,11 @@ $app->get("/voucher/detail/{id_voucher}", function ($request, $response) {
     ->innerJoin('m_promo b', 'a.id_promo = b.id_promo')
     ->where('a.id_voucher', '=', $id_voucher);
 
-  $voucher = $db->findAll();
+  $voucher = $db->find();
 
   if (empty($voucher)) {
     return nocontentResponse($response);
   }
 
   return successResponse($response, $voucher);
-});
-
-
-/**
- * Insert new voucher
- */
-$app->post("/voucher/add", function ($request, $response) {
-  $params = $request->getParams();
-  $db = $this->db;
-
-  try {
-    $params['created_at'] = time();
-
-    $promo = $db->insert("m_voucher", $params);
-    return successResponse($response, $promo);
-  } catch (Exception $e) {
-    return unprocessResponse($response, ["Terjadi masalah pada server"]);
-  }
 });
