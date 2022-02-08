@@ -221,6 +221,21 @@ $app->get("/order/proses/{id_user}", function ($request, $response) {
 // list order history of one user
 
 $app->get("/order/history/{id_user}", function ($request, $response) {
+  $params = $request->getParams();
+
+  // set limit
+  $limit = $params['limit'] ?? false;
+  $start = $params['start'] ?? false;
+
+  // check if params exist
+  if ($limit != false && $start != false) {
+    $limit = $params['limit'];
+    $start = $params['start'];
+  } else {
+    $limit = 1844674407370955161; // highest posible 
+    $start = 0;
+  }
+
   $id_user = $request->getAttribute('id_user');
   $db = $this->db;
 
@@ -229,6 +244,8 @@ $app->get("/order/history/{id_user}", function ($request, $response) {
     ->leftJoin("m_user b", "a.id_user = b.id_user")
     ->where("a.id_user", "=", $id_user)
     ->customWhere("a.status = 3 or a.status = 4", 'AND')
+    ->limit($limit)
+    ->offset($start)
     ->orderBy("a.status", "asc");
   $order = $db->findAll();
 
